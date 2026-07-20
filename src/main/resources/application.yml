@@ -1,0 +1,9 @@
+spring:
+  application:
+    name: WuXu
+
+#  设置日期格式
+  jackson:
+    date-format: yyyy-MM-dd/HH:mm:ss
+#  设置时区
+    time-zone: GTM+8
