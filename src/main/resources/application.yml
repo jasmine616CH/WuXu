@@ -2,8 +2,26 @@ spring:
   application:
     name: WuXu
 
+  datasource:
+    url: jdbc:mysql://localhost:3306/wuxu?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
+    username: root
+    password: 1234
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 #  设置日期格式
   jackson:
     date-format: yyyy-MM-dd/HH:mm:ss
 #  设置时区
-    time-zone: GTM+8
+    time-zone: GMT+8
+
+jwt:
+  secret: YourSuperSecretKeyForJwtTokenGenerationMustBeAtLeast256Bits!!
+  access-token-ttl: 3600000
+
+token:
+  refresh-token-ttl: 86400000

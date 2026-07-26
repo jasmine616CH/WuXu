@@ -9,7 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 @Service
-public class repairBackServiceImpl {
+public class repairBackServiceImpl implements config.easyExcel.read.service.repairBackService {
 
     @Autowired
     private repairMapper repairMapper;

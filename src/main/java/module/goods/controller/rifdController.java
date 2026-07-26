@@ -85,7 +85,7 @@ public class rifdController {
     /**
      * RFID物品维修处理-归还
      */
-    @PostMapping("/maintain")
+    @PostMapping("/maintain/back")
     public String itemMaintainBack(@Valid@RequestBody rfidReturnDataVo rfidReturnDataVo){
 
         //处理数据
