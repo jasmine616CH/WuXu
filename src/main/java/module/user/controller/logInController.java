@@ -8,6 +8,7 @@ import module.user.dto.LogOutDTO;
 import module.user.dto.logInDTO;
 import module.user.service.logInService;
 import module.user.service.redisService;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -34,12 +35,16 @@ public class logInController {
 
     /**
      * 用户登出接口
-     * @param logOutDTO 登出相关参数
+     * @param http 登出相关参数
      * @return  成功返回相关参数，失败返回错误信息
      */
     @PostMapping("logout")
-    public Result logOut(@RequestBody LogOutDTO logOutDTO){
-        logInService.logOut(logOutDTO);
+    public Result logOut(HttpSecurity http){
+        try {
+            logInService.logOut(http);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return Result.success();
     }
 

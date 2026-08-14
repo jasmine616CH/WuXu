@@ -3,6 +3,9 @@ package module.user.service;
 import module.user.dto.LogOutDTO;
 import module.user.dto.logInDTO;
 import module.user.vo.logInVo;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * 系统登录业务接口
@@ -19,8 +22,8 @@ public interface logInService {
 
     /**
      * 登出
-     * @param logOutDTO 登出系统参数
+     * @param http 登出系统参数
      */
-    void logOut(LogOutDTO logOutDTO);
+    SecurityFilterChain logOut(HttpSecurity http) throws Exception;
 
 }

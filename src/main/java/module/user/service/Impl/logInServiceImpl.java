@@ -14,6 +14,9 @@ import module.user.service.aesService;
 import module.user.service.logInService;
 import module.user.service.redisService;
 import module.user.vo.logInVo;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Service;
 
 /**
@@ -67,10 +70,27 @@ public class logInServiceImpl implements logInService {
 
     /**
      * 登出
-     * @param logOutDTO 登出系统参数
+     * @param http 返回登出参数
      */
     @Override
-    public void logOut(LogOutDTO logOutDTO) {
-
+    @Bean
+    public SecurityFilterChain logOut(HttpSecurity http) throws Exception {
+        http
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/css/**").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .formLogin(form -> form
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/home", true)
+                )
+                .logout(logout -> logout
+                        .logoutUrl("/logout")                // 登出请求地址
+                        .logoutSuccessUrl("/login?logout")   // 登出成功后跳转到登录页，并携带参数
+                        .invalidateHttpSession(true)         // 清除 Session
+                        .deleteCookies("JSESSIONID")         // 删除浏览器会话 Cookie
+                        .permitAll()
+                );
+        return http.build();
     }
 }
