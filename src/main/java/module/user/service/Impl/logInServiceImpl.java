@@ -6,7 +6,6 @@ import common.result.ResultCode;
 import common.until.jwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import module.user.dto.LogOutDTO;
 import module.user.dto.logInDTO;
 import module.user.entity.User;
 import module.user.mapper.userMapper;
@@ -77,16 +76,16 @@ public class logInServiceImpl implements logInService {
     public SecurityFilterChain logOut(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/login", "/css/**").permitAll()
+                        .requestMatchers("/api/user/login").permitAll()
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
-                        .loginPage("/login")
-                        .defaultSuccessUrl("/home", true)
+                        .loginPage("/api/user/login")
+                        .defaultSuccessUrl("/api/user/login", true)
                 )
                 .logout(logout -> logout
-                        .logoutUrl("/logout")                // 登出请求地址
-                        .logoutSuccessUrl("/login?logout")   // 登出成功后跳转到登录页，并携带参数
+                        .logoutUrl("/api/user/logout")                // 登出请求地址
+                        .logoutSuccessUrl("/api/user/login")   // 登出成功后跳转到登录页，并携带参数
                         .invalidateHttpSession(true)         // 清除 Session
                         .deleteCookies("JSESSIONID")         // 删除浏览器会话 Cookie
                         .permitAll()
