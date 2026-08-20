@@ -1,6 +1,13 @@
+server:
+  port: 8080
 spring:
   application:
     name: WuXu
+    spring:
+      redis:
+        host: localhost  # Redis服务器地址
+        port: 6379       # 端口
+        database: 0      # 默认数据库索引
 
   datasource:
     url: jdbc:mysql://localhost:3306/wuxu?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
@@ -11,7 +18,7 @@ spring:
   data:
     redis:
       host: localhost
-      port: 8080
+      port: 6379
 
 #  设置日期格式
   jackson:
@@ -22,6 +29,7 @@ spring:
 jwt:
   secret: YourSuperSecretKeyForJwtTokenGenerationMustBeAtLeast256Bits!!
   access-token-ttl: 3600000
+
 
 token:
   refresh-token-ttl: 86400000

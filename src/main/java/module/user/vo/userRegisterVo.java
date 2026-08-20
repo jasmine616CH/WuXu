@@ -34,8 +34,8 @@ public class userRegisterVo {
      * 密码 - 盐加密
      */
     @NotBlank(message = "密码不能为空")
-    @Pattern(regexp = "^[A-Za-z0-9]{8,12}",
-             message = "密码格式不对，请包含字母+数字，长度为8-12位")
+    @Pattern(regexp = "^[A-Za-z0-9+/=]{4,64}",
+             message = "密码格式不对")
     private final String passwordHash;
 
     /**

@@ -9,7 +9,7 @@ public enum ResultCode {
     /**
      * 状态码
      */
-    SUCCESS(1,"success"),
+    SUCCESS(200,"success"),
     ERROR(0 , "error"),
 
     /**

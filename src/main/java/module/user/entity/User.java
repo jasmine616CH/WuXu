@@ -1,5 +1,6 @@
 package module.user.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
@@ -10,7 +11,7 @@ import lombok.NoArgsConstructor;
 import java.io.Serial;
 import java.io.Serializable;
 
-@TableName("sys_user")
+@TableName("user")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
@@ -23,7 +24,7 @@ public class User implements Serializable {
     /**
      * 学号(主键）
      */
-    @TableId
+    @TableId(value = "ID")
     private String ID;
 
     /**
@@ -39,6 +40,7 @@ public class User implements Serializable {
     /**
      * 密码（盐哈希加密后）
      */
+    @TableField("password_hash")
     private String password;
 
     /**

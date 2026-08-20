@@ -62,9 +62,9 @@ public class userInfoServiceImpl implements userInfoService {
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
 
-        //2.修改密码
+        //2.修改密码（与注册保持一致：前端传base64，后端AES加密后存储）
         try {
-            user.setPassword(aesService.decrypt(userInfoDTO.getPasswordHash()));
+            user.setPassword(aesService.encrypt(userInfoDTO.getPasswordHash()));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -87,8 +87,14 @@ public class userInfoServiceImpl implements userInfoService {
             throw new BusinessException(ResultCode.USER_NOT_FOUND);
         }
 
-        //2.修改手机号
+        //2.修改手机号/邮箱/密码
         user.setPhone(userInfoDTO.getPhone());
+        user.setEmail(userInfoDTO.getEmail());
+        try {
+            user.setPassword(aesService.encrypt(userInfoDTO.getPasswordHash()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         //3.保存信息
         userMapper.updateById(user);

@@ -1,6 +1,7 @@
 package module.user.service;
 
 import module.user.dto.LogOutDTO;
+import module.user.dto.tokenDTO;
 
 import java.util.Map;
 
@@ -12,22 +13,37 @@ public interface redisService {
 
     /**
      * 生成刷新Token
-     * @param ID 用户ID
+     * @param username 用户名
      * @return 刷新令牌
      */
-    String generateRefreshToken(String ID);
+    String generateRefreshToken(String username);
 
     /**
      * 刷新访问令牌
      * @param refreshToken 刷新令牌
-     * @return  令牌对
+     * @return 令牌对（包含accessToken和refreshToken）
      */
-    Map<String , String> refreshAccessToken(String refreshToken);
+    tokenDTO refreshAccessToken(String refreshToken);
+
+    /**
+     * 验证刷新令牌是否有效
+     * @param refreshToken 刷新令牌
+     * @return true-有效，false-无效
+     */
+    boolean validateRefreshToken(String refreshToken);
 
     /**
      * 用户登出
-     * @param logOutDTO 登出参数
+     * @param logoutDTO 登出参数
      */
-    void logOut(LogOutDTO logOutDTO);
+    void logout(LogOutDTO logoutDTO);
+
+
+    /**
+     * 检查accessToken是否有效
+     * @param accessToken 访问令牌
+     * @return true-有效，false-无效
+     */
+    boolean validateAccessToken(String accessToken);
 
 }

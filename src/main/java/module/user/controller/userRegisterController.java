@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/register")
+@RequestMapping("/api/user/register")
 @RequiredArgsConstructor
 public class userRegisterController {
 

@@ -15,10 +15,11 @@ import java.util.Base64;
 @Service
 public class aesServiceImpl implements aesService {
 
-    private static final String ALGORITHM = "GCM";
+    private static final String ALGORITHM = "AES/GCM/NoPadding";
     private static final int GCM_TAG_LENGTH = 128;
     private static final int GCM_IV_LENGTH = 12;
-    private static final String SECRET_KEY = "your-256-bit-secret-key";
+    // 必须是 16 / 24 / 32 字节，当前为 32 字节（AES-256）
+    private static final String SECRET_KEY = "0123456789abcdef0123456789abcdef";
 
     /**
      * 加密
@@ -31,7 +32,7 @@ public class aesServiceImpl implements aesService {
         byte[] iv = new byte[GCM_IV_LENGTH];
         SecureRandom random = new SecureRandom();
         random.nextBytes(iv);
-        GCMParameterSpec spec = new GCMParameterSpec(GCM_IV_LENGTH, iv);
+        GCMParameterSpec spec = new GCMParameterSpec(GCM_TAG_LENGTH, iv);
 
         //2.准备密钥
         SecretKeySpec keySpec = new SecretKeySpec(SECRET_KEY.getBytes() , "AES");

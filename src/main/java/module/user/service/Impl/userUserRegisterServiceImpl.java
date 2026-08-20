@@ -24,7 +24,7 @@ public class userUserRegisterServiceImpl implements userRegisterService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void register(userRegisterDTO request) {
-        request.setPassword_hash(aesService.encrypt(request.getPassword_hash()));
+        request.setPasswordHash(aesService.encrypt(request.getPasswordHash()));
         userMapper.add(request);
     }
 }

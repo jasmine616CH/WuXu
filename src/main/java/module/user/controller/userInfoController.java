@@ -23,7 +23,7 @@ public class userInfoController {
      * 获取当前登录用户基本信息接口
      * @return 用户基本信息
      */
-    @GetMapping("/base")
+    @PostMapping("/base")
     public Result getUserInfo(){
         return Result.success(userInfoService.getUserInfo());
     }
@@ -32,7 +32,7 @@ public class userInfoController {
      * 获取当前登录用户详细信息
      * @return 用户详细信息
      */
-    @GetMapping("/profile")
+    @PostMapping("/profile")
     public Result getUserProfile(){
         return Result.success(userInfoService.getUserProfile());
     }
@@ -53,7 +53,7 @@ public class userInfoController {
      * @param userInfoDTO 用户信息
      * @return 成功返回相关信息 失败返回失败信息
      */
-    @PutMapping("/update-info")
+    @PostMapping("/update")
     public Result updateUserInfo(@Valid@RequestBody userInfoDTO userInfoDTO){
         userInfoService.updateUserInfo(userInfoDTO);
         return Result.success();

@@ -2,42 +2,80 @@ package common.result;
 
 import common.exception.BusinessException;
 import lombok.Data;
+import org.apache.poi.ss.formula.functions.T;
 
 @Data
-public class Result {
+public class Result<T> {
 
+    /**
+     * 状态码
+     */
     private Integer code;
 
-    private String massage;
+    /**
+     * 消息
+     */
+    private String message;
 
-    private Object date;
+    /**
+     * 数据
+     */
+    private T data;
 
-    public static Result success(Object date){
-        Result result = new Result();
-        result.setCode(ResultCode.SUCCESS.getCode());
-        result.setDate(date);
-        result.setMassage("success");
-        return result;
+    /**
+     * 时间戳
+     */
+    private Long timestamp;
+
+    private Result() {
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public static Result success(){
-        return success(null);
+    private Result(Integer code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+        this.timestamp = System.currentTimeMillis();
     }
 
-    public static Result error(Integer code , String massage){
-        Result result = new Result();
-        result.setCode(code);
-        result.setDate(null);
-        result.setMassage(massage);
-        return result;
+    public static <T> Result<T> success() {
+        return new Result<>(200, "success", null);
     }
 
-    public static Result error(BusinessException b){
-        Result result = new Result();
-        result.setCode(b.getResultCode().getCode());
-        result.setMassage(b.getResultCode().getMassage());
-        result.setDate(null);
-        return result;
+    public static <T> Result<T> success(T data) {
+        return new Result<>(200, "success", data);
     }
 
+    public static <T> Result<T> success(String message, T data) {
+        return new Result<>(200, message, data);
+    }
+
+    // ========== 错误响应 ==========
+    public static <T> Result<T> error(Integer code, String message) {
+        return new Result<>(code, message, null);
+    }
+
+    public static <T> Result<T> error(String message) {
+        return new Result<>(0, message, null);
+    }
+
+    /**
+     *  基于 ResultCode 枚举
+     */
+    public static <T> Result<T> error(ResultCode resultCode) {
+        return new Result<>(resultCode.getCode(), resultCode.getMassage(),null);
+    }
+
+    /**
+     * 基于 BusinessException
+     */
+    public static <T> Result<T> error(BusinessException e) {
+        ResultCode resultCode = e.getResultCode();
+        if (resultCode != null) {
+            return new Result<>(resultCode.getCode(), resultCode.getMassage(), null);
+        } else {
+            // 降级处理：使用异常自带消息
+            return new Result<>(500, e.getMessage(), null);
+        }
+    }
 }

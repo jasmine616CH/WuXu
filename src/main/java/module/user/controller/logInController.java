@@ -1,14 +1,14 @@
 package module.user.controller;
 
+import common.exception.BusinessException;
 import common.result.Result;
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import module.user.dto.LogOutDTO;
-import module.user.dto.logInDTO;
+import module.user.dto.*;
 import module.user.service.logInService;
 import module.user.service.redisService;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import module.user.vo.tokenRefreshVo;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,38 +24,68 @@ public class logInController {
     private final redisService redisService;
 
     /**
-     *用户登录接口
-     * @param logInDTO 登录相关参数
+     * 用户登录接口
+     *
+     * @param loginDTO 登录请求参数
      * @return 成功返回相关参数，失败返回错误信息
      */
     @PostMapping("/login")
-    public Result logIn(@RequestBody logInDTO logInDTO){
-        return Result.success(logInService.logIn(logInDTO));
-    }
-
-    /**
-     * 用户登出接口
-     * @param http 登出相关参数
-     * @return  成功返回相关参数，失败返回错误信息
-     */
-    @PostMapping("logout")
-    public Result logOut(HttpSecurity http){
-        try {
-            logInService.logOut(http);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return Result.success();
+    public Result login(@RequestBody logInDTO loginDTO) {
+        return Result.success(logInService.logIn(loginDTO));
     }
 
     /**
      * 刷新token接口
-     * @param refreshToken 刷新token
-     * @return 成功返回accessToken和refreshToken,失败返回错误信息
      */
-    @PostMapping("/refresh-access-token")
-    public Result refreshAccessToken(@NotBlank @RequestParam String refreshToken){
-        return Result.success(redisService.refreshAccessToken(refreshToken));
+    @PostMapping("/refresh-token")
+    public Result<tokenRefreshVo> refreshToken(
+            @Valid @RequestBody tokenRefreshDTO request) {
+
+        try {
+            // 1. 验证refreshToken
+            if (!redisService.validateRefreshToken(request.getRefreshToken())) {
+                return Result.error(401, "刷新令牌无效或已过期，请重新登录");
+            }
+
+            // 2. 刷新token
+            tokenDTO tokenDTO = redisService.refreshAccessToken(
+                    request.getRefreshToken());
+
+            // 3. 构建响应
+            tokenRefreshVo vo = tokenRefreshVo.builder()
+                    .accessToken(tokenDTO.getAccessToken())
+                    .refreshToken(tokenDTO.getRefreshToken())
+                    .expiresIn(tokenDTO.getExpiresIn())
+                    .refreshExpiresIn(tokenDTO.getRefreshExpiresIn())
+                    .tokenType(tokenDTO.getTokenType())
+                    .build();
+
+            return Result.success(vo);
+
+        } catch (BusinessException e) {
+            // 处理刷新异常（包括重放攻击检测）
+            log.warn("Token刷新失败：{}", e.getMessage());
+            return Result.error(40005, "Token刷新失败");
+        } catch (Exception e) {
+            log.error("Token刷新异常", e);
+            return Result.error(40006, "Token刷新异常");
+        }
+    }
+
+    /**
+     * 用户登出
+     */
+    @PostMapping("/logout")
+    public Result<Void> logout(@Valid @RequestBody tokenLogoutDTO request) {
+        try {
+            redisService.logout(LogOutDTO.builder()
+                    .accessToken(request.getAccessToken())
+                    .build());
+            return Result.success();
+        } catch (Exception e) {
+            log.error("登出异常", e);
+            return Result.error(40404, "登出失败");
+        }
     }
 
 

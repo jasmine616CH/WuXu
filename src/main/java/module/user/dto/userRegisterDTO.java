@@ -18,7 +18,7 @@ public class userRegisterDTO {
     /**
      * 密码-加密
      */
-    private  String password_hash;
+    private  String passwordHash;
 
 
     /**

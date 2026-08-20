@@ -1,6 +1,7 @@
 package module.useLog.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import common.result.Result;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import module.useLog.dto.noteDTO;
@@ -25,7 +26,7 @@ public class noteController {
      * 使用情况查询
      */
     @GetMapping
-    public IPage<noteVo> noteFind(noteVo noteVo){
+    public Result<IPage<noteVo>> noteFind(noteVo noteVo){
 
         //1.Vo转DTO
         noteDTO noteDTO = new noteDTO();
@@ -34,13 +35,16 @@ public class noteController {
         //2.处理数据
         IPage<noteDTO> iPage = noteService.useFind(noteDTO);
 
-        return iPage.convert(noteDTO1 -> {
+        //3.转Vo并封装统一返回结构（前端读取 res.data.records）
+        IPage<noteVo> voPage = iPage.convert(noteDTO1 -> {
 
             noteVo vo = new noteVo();
             BeanUtils.copyProperties(noteDTO1 , vo);
             return vo;
 
         });
+
+        return Result.success(voPage);
 
     }
 }

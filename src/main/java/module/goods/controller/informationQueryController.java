@@ -1,6 +1,6 @@
 package module.goods.controller;
 
-import common.result.Effect;
+import common.result.Result;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,12 +10,13 @@ import module.goods.service.informationQueryService;
 import module.goods.vo.informationQueryVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -23,15 +24,15 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @RestController
-@RequestMapping("/goods/query")
+@RequestMapping("/api/goods/list")
 @RequiredArgsConstructor
 public class informationQueryController {
 
     @Autowired
     private informationQueryService informationQueryService;
 
-    @PostMapping
-    public Effect<List<informationQueryVo>> informationQuery(@Valid @RequestBody informationQueryVo vo){
+    @GetMapping
+    public Result<Map<String, Object>> informationQuery(@Valid informationQueryVo vo){
 
         //1.Vo转DTO
         informationQueryDTO dto =informationQueryDTO.builder()
@@ -56,7 +57,12 @@ public class informationQueryController {
                 })
                 .collect(Collectors.toList());
 
-        return Effect.success(listVo);
+        //4.封装为分页结构（与前端 res.data.records 对应）
+        Map<String, Object> pageData = new HashMap<>();
+        pageData.put("records", listVo);
+        pageData.put("total", listVo.size());
+
+        return Result.success(pageData);
 
     }
 

@@ -1,16 +1,14 @@
 package module.user.service.Impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.alibaba.excel.util.StringUtils;
 import common.exception.BusinessException;
 import common.result.ResultCode;
 import common.until.jwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import module.user.dto.LogOutDTO;
-import module.user.entity.User;
-import module.user.mapper.userMapper;
+import module.user.dto.tokenDTO;
 import module.user.service.redisService;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -26,96 +24,109 @@ import java.util.concurrent.TimeUnit;
 @RequiredArgsConstructor
 public class redisServiceImpl implements redisService {
 
-    private final jwtTokenProvider jwtTokenProvider;
-    private final StringRedisTemplate stringRedisTemplate;
-    private final userMapper userMapper;
+    @Autowired
+    private StringRedisTemplate redisTemplate;
 
-    @Value("${token.refresh-token-ttl}")
-    private long refreshTokenTtl;
+    @Autowired
+    private jwtTokenProvider jwtTokenProvider;
 
-    //redis key 前缀
-    private static final String USER_RT_PREFIX = "refresh-token:user:";
-    private static final String RT_PREFIX = "refresh-token:rt:";
+    private static final String REFRESH_TOKEN_PREFIX = "refresh:";
+    private static final String USER_TOKEN_PREFIX = "user:token:";
+    // 黑名单相关常量已移除
+    private static final long REFRESH_TOKEN_EXPIRE = 7 * 24 * 60 * 60; // 7天
+    private static final long ACCESS_TOKEN_EXPIRE = 30 * 60; // 30分钟
 
-    /**
-     *生成刷新令牌
-     * @param ID 用户ID
-     * @return 新令牌
-     */
     @Override
-    public String generateRefreshToken(String ID) {
+    public String generateRefreshToken(String username) {
+        String refreshToken = UUID.randomUUID().toString().replace("-", "");
+        String key = REFRESH_TOKEN_PREFIX + refreshToken;
 
-        //1.删除旧的refreshToken
-        String oldRefreshToken = stringRedisTemplate.opsForValue().get(USER_RT_PREFIX + ID);
-        if (oldRefreshToken != null){
-            stringRedisTemplate.delete(RT_PREFIX + oldRefreshToken);
-        }
+        // 存储refreshToken，关联用户信息
+        Map<String, String> tokenInfo = new HashMap<>();
+        tokenInfo.put("username", username);
+        tokenInfo.put("createTime", String.valueOf(System.currentTimeMillis()));
 
-        //2.生成新的refreshToken
-        String refreshToken = UUID.randomUUID().toString();
-
-        //3.保存双向映射
-        stringRedisTemplate.opsForValue()
-                .set(RT_PREFIX + refreshToken , String.valueOf(ID) , refreshTokenTtl , TimeUnit.HOURS);
-        stringRedisTemplate.opsForValue()
-                .set(RT_PREFIX + ID , refreshToken , refreshTokenTtl , TimeUnit.HOURS);
+        redisTemplate.opsForHash().putAll(key, tokenInfo);
+        redisTemplate.expire(key, REFRESH_TOKEN_EXPIRE, TimeUnit.SECONDS);
 
         return refreshToken;
     }
 
-    /**
-     * 使用 refreshToken 刷新 accessToken
-     * @param refreshToken 刷新令牌
-     */
     @Override
-    public Map<String, String> refreshAccessToken(String refreshToken) {
+    public tokenDTO refreshAccessToken(String refreshToken) {
+        // 1. 验证refreshToken是否存在
+        String key = REFRESH_TOKEN_PREFIX + refreshToken;
+        if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
+            throw new BusinessException(ResultCode.TOKEN_EXPIRED);
+        }
 
-        //1.检验令牌是否有效
-        String ID = stringRedisTemplate.opsForValue().get(RT_PREFIX + refreshToken);
-        if (ID == null){
+        // 2. 获取用户信息（黑名单检查已移除）
+        Map<Object, Object> tokenInfo = redisTemplate.opsForHash().entries(key);
+        String username = (String) tokenInfo.get("username");
+        Integer userType = (Integer) tokenInfo.get("userType");
+        String id = (String) tokenInfo.get("id");
+        if (StringUtils.isBlank(username)) {
             throw new BusinessException(ResultCode.TOKEN_INVALID);
         }
 
-        //2.查询用户信息
-        LambdaQueryWrapper<User> queryWrapper = Wrappers.<User>lambdaQuery()
-                .eq(User::getID , ID)
-                .select(User::getID , User::getUsername , User::getPassword);
-        User user = userMapper.selectOne(queryWrapper);
-        if (user == null){
-            throw new BusinessException(ResultCode.USER_NOT_FOUND);
+        // 3. 删除旧的refreshToken（不再加入黑名单）
+        redisTemplate.delete(key);
+
+        // 4. 生成新的token对
+        String newAccessToken = jwtTokenProvider.generateAccessToken(id,username, userType);
+        String newRefreshToken = generateRefreshToken(username);
+
+        // 5. 保存新的refreshToken到用户关联
+        saveUserTokenMapping(username, newRefreshToken);
+
+        return tokenDTO.builder()
+                .accessToken(newAccessToken)
+                .refreshToken(newRefreshToken)
+                .expiresIn(ACCESS_TOKEN_EXPIRE)
+                .refreshExpiresIn(REFRESH_TOKEN_EXPIRE)
+                .tokenType("Bearer")
+                .build();
+    }
+
+    @Override
+    public boolean validateRefreshToken(String refreshToken) {
+        String key = REFRESH_TOKEN_PREFIX + refreshToken;
+        // 只检查是否存在，黑名单检查已移除
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
+    }
+
+    @Override
+    public void logout(LogOutDTO logoutDTO) {
+        String accessToken = logoutDTO.getAccessToken();
+        String refreshToken = logoutDTO.getRefreshToken();
+
+        // 1. 处理accessToken：仅删除用户映射，不加入黑名单
+        if (StringUtils.isNotBlank(accessToken)) {
+            String username = jwtTokenProvider.getUserNameFromToken(accessToken);
+            if (StringUtils.isNotBlank(username)) {
+                redisTemplate.delete(USER_TOKEN_PREFIX + username);
+            }
         }
 
-        //3.生成新的accessToken
-        String newAccessToken = jwtTokenProvider.generateAccessToken(user.getID() , user.getUsername() , user.getPermission());
-
-        //4.删除旧的token 生成新的token
-        revokeRefreshToken(ID , refreshToken);
-        String newRefreshToken = generateRefreshToken(user.getID());
-
-        //5.返回令牌
-        Map<String , String> map = new HashMap<>();
-        map.put("refreshToken" , newRefreshToken);
-        map.put("accessToken" , newAccessToken);
-        return map;
+        // 2. 处理refreshToken：删除其key，不加入黑名单
+        if (StringUtils.isNotBlank(refreshToken)) {
+            redisTemplate.delete(REFRESH_TOKEN_PREFIX + refreshToken);
+        }
     }
 
-    /**
-     * 登出
-     * @param logOutDTO 登出参数
-     */
     @Override
-    public void logOut(LogOutDTO logOutDTO) {
-        //撤销刷新令牌
-        revokeRefreshToken(logOutDTO.getUserID() , logOutDTO.getRefreshToken());
-
+    public boolean validateAccessToken(String accessToken) {
+        if (StringUtils.isBlank(accessToken)) {
+            return false;
+        }
+        // 黑名单检查已移除，仅验证JWT本身是否有效
+        return jwtTokenProvider.isTokenValid(accessToken);
     }
 
-    /**
-     * 主动撤销token
-     */
-    public void revokeRefreshToken(String ID , String refreshToken){
-        stringRedisTemplate.delete(USER_RT_PREFIX + ID);
-        stringRedisTemplate.delete(RT_PREFIX + refreshToken);
+    // 辅助方法：保存用户与token的关联
+    private void saveUserTokenMapping(String username, String refreshToken) {
+        String key = USER_TOKEN_PREFIX + username;
+        redisTemplate.opsForSet().add(key, refreshToken);
+        redisTemplate.expire(key, REFRESH_TOKEN_EXPIRE, TimeUnit.SECONDS);
     }
-
 }
