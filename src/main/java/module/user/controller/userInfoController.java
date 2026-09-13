@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Validated
-@CrossOrigin(origins = "*")
 public class userInfoController {
 
     private final userInfoService userInfoService;

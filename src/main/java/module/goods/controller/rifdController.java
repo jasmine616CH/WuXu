@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/rfid")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class rifdController {
 
     @Autowired

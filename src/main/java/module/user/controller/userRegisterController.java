@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/user/register")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class userRegisterController {
 
     private final userRegisterService registerService;

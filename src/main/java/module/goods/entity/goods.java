@@ -24,7 +24,7 @@ public class goods {
     private Integer ID;
 
     /**
-     * 物品状态 0-在库 1-已借出 2-维修中 3-已报废 4-已丢失
+     * 物品状态 0-在库 1-已借出 2-维修中 3-已报废 4-已丢失 5-已预约
      */
     private Integer state;
 

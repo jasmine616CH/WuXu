@@ -1,5 +1,8 @@
 package module.goods.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
@@ -10,6 +13,7 @@ public class informationQueryDTO {
     /**
      *物品名称
      */
+    @Size(max = 10 , message = "字数最大不能超过10个")
     private final String name;
 
     /**
@@ -32,11 +36,14 @@ public class informationQueryDTO {
     /**
      * 每页最大条数
      */
+    @Min(value = 1 , message = "每页最小条数为1")
+    @Max(value = 100 , message = "每页最大数为100")
     private Integer pageSize;
 
     /**
      * 页码数
      */
+    @Min(value = 1 , message = "页码最小数为1")
     private Integer pageNum;
 
 
