@@ -5,6 +5,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import module.user.dto.userInfoDTO;
 import module.user.service.userInfoService;
+import module.user.vo.userInfoVo;
+import module.user.vo.userProfileVo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequiredArgsConstructor
 @Validated
+@CrossOrigin(origins = "*")
 public class userInfoController {
 
     private final userInfoService userInfoService;
@@ -24,7 +27,7 @@ public class userInfoController {
      * @return 用户基本信息
      */
     @PostMapping("/base")
-    public Result getUserInfo(){
+    public Result<userInfoVo> getUserInfo(){
         return Result.success(userInfoService.getUserInfo());
     }
 
@@ -33,7 +36,7 @@ public class userInfoController {
      * @return 用户详细信息
      */
     @PostMapping("/profile")
-    public Result getUserProfile(){
+    public Result<userProfileVo> getUserProfile(){
         return Result.success(userInfoService.getUserProfile());
     }
 
@@ -43,7 +46,7 @@ public class userInfoController {
      * @return 成功返回相关信息 失败返回错误信息
      */
     @PostMapping("/password")
-    public Result updatePassword(@Valid@RequestBody userInfoDTO userInfoDTO){
+    public Result<String> updatePassword(@Valid@RequestBody userInfoDTO userInfoDTO){
         userInfoService.updatePassword(userInfoDTO);
         return Result.success();
     }
@@ -54,7 +57,7 @@ public class userInfoController {
      * @return 成功返回相关信息 失败返回失败信息
      */
     @PostMapping("/update")
-    public Result updateUserInfo(@Valid@RequestBody userInfoDTO userInfoDTO){
+    public Result<String> updateUserInfo(@Valid@RequestBody userInfoDTO userInfoDTO){
         userInfoService.updateUserInfo(userInfoDTO);
         return Result.success();
     }

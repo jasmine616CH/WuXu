@@ -19,8 +19,6 @@ public class userInfoDTO {
      * 邮箱
      */
     @NotBlank(message = "邮箱不能为空")
-    @Pattern(regexp = "^[A-Za-z0-9._-]+@[A-Za-z0-9-]+(\\.[A-Za-z0-9-])*+\\.[A-Za-z0-9-]{2,6}$",
-            message = "邮箱格式不正确，请输入正确格式")
     private String email;
 
     /**

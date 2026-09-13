@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import module.user.dto.*;
 import module.user.service.logInService;
 import module.user.service.redisService;
+import module.user.vo.logInVo;
 import module.user.vo.tokenRefreshVo;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/user")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class logInController {
 
     private final logInService logInService;
@@ -30,7 +32,7 @@ public class logInController {
      * @return 成功返回相关参数，失败返回错误信息
      */
     @PostMapping("/login")
-    public Result login(@RequestBody logInDTO loginDTO) {
+    public Result<logInVo> login(@RequestBody logInDTO loginDTO) {
         return Result.success(logInService.logIn(loginDTO));
     }
 

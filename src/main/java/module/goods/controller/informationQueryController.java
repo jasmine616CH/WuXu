@@ -10,6 +10,7 @@ import module.goods.service.informationQueryService;
 import module.goods.vo.informationQueryVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/api/goods/list")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class informationQueryController {
 
     @Autowired

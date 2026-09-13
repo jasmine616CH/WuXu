@@ -7,10 +7,7 @@ import module.user.dto.userRegisterDTO;
 import module.user.service.userRegisterService;
 import module.user.vo.userRegisterVo;
 import org.springframework.beans.BeanUtils;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * 用户注册控制器
@@ -20,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/user/register")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*")
 public class userRegisterController {
 
     private final userRegisterService registerService;
@@ -31,7 +29,7 @@ public class userRegisterController {
      * @return 成功返回统一结果，错误返回错误信息
      */
     @PostMapping
-    public Result register(@RequestBody userRegisterVo userRegisterVo){
+    public Result<String> register(@RequestBody userRegisterVo userRegisterVo){
         
         //vo转dto
         userRegisterDTO userRegisterDTO = new userRegisterDTO();

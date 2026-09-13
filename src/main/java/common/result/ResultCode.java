@@ -1,6 +1,5 @@
 package common.result;
 
-import common.exception.BusinessException;
 import lombok.Getter;
 
 @Getter
@@ -19,6 +18,7 @@ public enum ResultCode {
     PASSWORD_ERROR(400102 , "密码错误"),
     PHONE_FORMAT_ERROR(400103 , "手机号格式不对"),
     USER_NOT_LOGIN(400104 , "用户未登录"),
+    USER_ALREADY_EXISTS(400105 , "该学号/工号已注册，请直接登录"),
 
     /**
      * token模块
@@ -46,7 +46,7 @@ public enum ResultCode {
     private final int code;
     private final String massage;
 
-    private ResultCode(int code , String massage){
+    ResultCode(int code, String massage){
         this.code = code;
         this.massage = massage;
     }
