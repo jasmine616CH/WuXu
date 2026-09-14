@@ -1,8 +1,11 @@
 package common.enums;
 
+import lombok.Getter;
+
 /**
  * 物品状态
  */
+@Getter
 public enum ItemCondition {
 
     AVAILABLE(0,"在库"),
