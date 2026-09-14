@@ -5,8 +5,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import module.user.dto.userRegisterDTO;
 import module.user.service.userRegisterService;
-import module.user.vo.userRegisterVo;
-import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -24,17 +22,12 @@ public class userRegisterController {
     /**
      * 用户注册接口
      *
-     * @param userRegisterVo 注册请求参数
+     * @param dto 注册请求参数
      * @return 成功返回统一结果，错误返回错误信息
      */
     @PostMapping
-    public Result<String> register(@RequestBody userRegisterVo userRegisterVo){
-        
-        //vo转dto
-        userRegisterDTO userRegisterDTO = new userRegisterDTO();
-        BeanUtils.copyProperties(userRegisterVo , userRegisterDTO);
-        
-        registerService.register(userRegisterDTO);
+    public Result<String> register(@RequestBody userRegisterDTO dto){
+        registerService.register(dto);
         return Result.success();
     }
 

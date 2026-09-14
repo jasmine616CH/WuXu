@@ -6,7 +6,6 @@ import common.result.ResultCode;
 import common.until.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import module.user.dto.userInfoDTO;
-import module.user.dto.userRegisterDTO;
 import module.user.entity.User;
 import module.user.mapper.userMapper;
 import module.user.service.aesService;

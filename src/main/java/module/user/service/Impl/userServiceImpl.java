@@ -7,10 +7,6 @@ import common.exception.BusinessException;
 import common.result.ResultCode;
 import lombok.RequiredArgsConstructor;
 import module.user.entity.User;
-import module.user.entity.eduStudent;
-import module.user.entity.eduTeacher;
-import module.user.mapper.eduStudentMapper;
-import module.user.mapper.eduTeacherMapper;
 import module.user.mapper.userMapper;
 import module.user.service.userService;
 import module.user.vo.userProfileVo;
@@ -23,11 +19,9 @@ import java.util.Objects;
  */
 @Service
 @RequiredArgsConstructor
-public class userServiceImpl extends ServiceImpl<userMapper , User> implements userService {
+public class userServiceImpl extends ServiceImpl<userMapper, User> implements userService {
 
     private final userMapper userMapper;
-    private final eduStudentMapper eduStudentMapper;
-    private final eduTeacherMapper eduTeacherMapper;
 
 
     /**
@@ -71,9 +65,9 @@ public class userServiceImpl extends ServiceImpl<userMapper , User> implements u
      */
     private userProfileVo getStudentDetail(User user , userProfileVo userProfileVo){
 
-        eduStudent student = eduStudentMapper.selectOne(Wrappers
-                .lambdaQuery(eduStudent.class)
-                .eq(eduStudent::getID , user.getID()));
+        User student = userMapper.selectOne(Wrappers
+                .lambdaQuery(User.class)
+                .eq(User::getID , user.getID()));
         if (Objects.nonNull(student)){
             BeanUtil.copyProperties(student , userProfileVo , "ID");
         }
@@ -86,9 +80,9 @@ public class userServiceImpl extends ServiceImpl<userMapper , User> implements u
      */
     private userProfileVo getTeacherDetail(User user , userProfileVo userProfileVo){
 
-       eduTeacher teacher = eduTeacherMapper.selectOne(Wrappers
-               .lambdaQuery(eduTeacher.class)
-               .eq(eduTeacher::getID , user.getID()));
+       User teacher = userMapper.selectOne(Wrappers
+               .lambdaQuery(User.class)
+               .eq(User::getID , user.getID()));
        if (Objects.nonNull(teacher)){
            BeanUtil.copyProperties(teacher , userProfileVo , "ID");
        }

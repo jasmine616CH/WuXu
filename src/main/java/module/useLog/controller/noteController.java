@@ -26,16 +26,12 @@ public class noteController {
      * 使用情况查询
      */
     @GetMapping
-    public Result<IPage<noteVo>> noteFind(noteVo noteVo){
+    public Result<IPage<noteVo>> noteFind(noteDTO dto){
 
-        //1.Vo转DTO
-        noteDTO noteDTO = new noteDTO();
-        BeanUtils.copyProperties(noteVo, noteDTO);
+        //1.处理数据
+        IPage<noteDTO> iPage = noteService.useFind(dto);
 
-        //2.处理数据
-        IPage<noteDTO> iPage = noteService.useFind(noteDTO);
-
-        //3.转Vo并封装统一返回结构（前端读取 res.data.records）
+        //2.转Vo并封装统一返回结构（前端读取 res.data.records）
         IPage<noteVo> voPage = iPage.convert(noteDTO1 -> {
 
             noteVo vo = new noteVo();
