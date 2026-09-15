@@ -35,6 +35,8 @@ public enum ResultCode {
     GOODS_IN_MAINTAIN(400302 , "物品维修中"),
     GOODS_SUBSCRIBE_EMPTY(400303 , "请先选择要预约的物品"),
     GOODS_SUBSCRIBE_CONFLICT(400304 , "部分物品已被预约或已不在库，请刷新后重试"),
+    GOODS_CANCEL_EMPTY(400305 , "请选择要取消预约的物品"),
+    GOODS_CANCEL_CONFLICT(400304 , "请刷新后重试"),
 
     /**
      * excel模块

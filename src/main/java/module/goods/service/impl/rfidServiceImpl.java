@@ -2,7 +2,7 @@ package module.goods.service.impl;
 
 import module.goods.dto.recordDTO;
 import module.goods.dto.rfidDTO;
-import module.goods.mapper.diaryEntryMapper;
+import module.goods.mapper.usageRecordMapper;
 import module.goods.mapper.rfidMapper;
 import module.goods.service.rfidService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,7 +17,7 @@ public class rfidServiceImpl implements rfidService {
     @Autowired
     private rfidMapper rfidMapper;
     @Autowired
-    private diaryEntryMapper diaryEntryMapper;
+    private usageRecordMapper usageRecordMapper;
 
     /**
      * RFID物品新增处理
@@ -33,7 +33,7 @@ public class rfidServiceImpl implements rfidService {
     @Override
     public void itemBorrowing(rfidDTO rfidDTO, recordDTO recordDTO) {
         rfidMapper.itemBorrowing(rfidDTO);
-        diaryEntryMapper.borrow(recordDTO);
+        usageRecordMapper.borrow(recordDTO);
     }
 
     /**
@@ -42,7 +42,7 @@ public class rfidServiceImpl implements rfidService {
     @Override
     public void itemBack(rfidDTO rfidDTO, recordDTO recordDTO) {
         rfidMapper.itemBack(rfidDTO);
-        diaryEntryMapper.back(recordDTO);
+        usageRecordMapper.back(recordDTO);
     }
 
     /**

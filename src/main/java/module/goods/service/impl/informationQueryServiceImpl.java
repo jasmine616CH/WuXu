@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import module.goods.dto.informationQueryDTO;
 import module.goods.entity.goods;
-import module.goods.mapper.informationQueryMapper;
+import module.goods.mapper.goodsMapper;
 import module.goods.service.informationQueryService;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -16,7 +16,7 @@ import java.util.List;
  * 物品情况查询业务实现类
  */
 @Service
-public class informationQueryServiceImpl extends  ServiceImpl<informationQueryMapper, goods> implements informationQueryService {
+public class informationQueryServiceImpl extends  ServiceImpl<goodsMapper, goods> implements informationQueryService {
 
     /**
      * 根据条件查询物品使用情况

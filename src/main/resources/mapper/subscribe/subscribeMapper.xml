@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="module.goods.mapper.subscribeMapper">
+
+    <!--
+        ID 交给 reservation.ID 的 AUTO_INCREMENT 生成（DTO 里的 id 是雪花字段，服务层并未赋值）
+        status 写入 0=有效，这样 activeFlag 生成列会得到 1，uk_reservation_slot 唯一索引才能防重复预约
+    -->
+    <insert id="insertBatch" parameterType="list">
+        INSERT INTO wuxu.reservation(objectID, userID, startTime, endTime, createTime, status)
+        VALUES
+            <foreach collection="list" item="dto" separator=",">
+                (#{dto.objectId}, #{dto.userId}, #{dto.startTime}, #{dto.endTime}, #{dto.creatTime}, 0)
+            </foreach>
+    </insert>
+
+</mapper>

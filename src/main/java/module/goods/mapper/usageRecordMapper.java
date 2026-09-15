@@ -6,10 +6,10 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Update;
 
 /**
- * 日志记录
+ * 对应usage_record表
  */
 @Mapper
-public interface diaryEntryMapper {
+public interface usageRecordMapper {
 
     /**
      * 物品借用

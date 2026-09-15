@@ -5,14 +5,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import module.goods.dto.informationQueryDTO;
-import module.goods.dto.subscribeGoodsIdDTO;
 import module.goods.entity.goods;
 import module.goods.service.informationQueryService;
-import module.goods.service.subscribeGoodsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,9 +28,6 @@ public class informationQueryController {
     @Autowired
     private informationQueryService informationQueryService;
 
-    @Autowired
-    private subscribeGoodsService  subscribeGoodsService;
-
     /**
      * 物品查询
      * @param dto 查询数据
@@ -53,17 +46,6 @@ public class informationQueryController {
 
         return Result.success(pageData);
 
-    }
-
-    /**
-     * 批量预约物品
-     * @param dto 物品id列表，JSON 数组：[{"id":1},{"id":2}]
-     * @return 成功返回提示信息
-     */
-    @PostMapping("/subscribe")
-    public Result<String> subscribeGoods(@RequestBody List<subscribeGoodsIdDTO> dto){
-        subscribeGoodsService.subscribeGoods(dto);
-        return Result.success("预约成功" , null);
     }
 
 }

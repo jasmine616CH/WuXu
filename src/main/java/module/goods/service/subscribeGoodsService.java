@@ -1,6 +1,7 @@
 package module.goods.service;
 
-import module.goods.dto.subscribeGoodsIdDTO;
+import module.goods.dto.cancelSubscribeDTO;
+import module.goods.dto.subscribeGoodsDTO;
 
 import java.util.List;
 
@@ -11,8 +12,14 @@ public interface subscribeGoodsService {
 
     /**
      * 批量预定物品
-     * @param dto 物品id列表
+     * @param dto 物品id
      */
-    void subscribeGoods(List<subscribeGoodsIdDTO> dto);
+    void subscribeGoods(List<subscribeGoodsDTO> dto);
+
+    /**
+     * 批量取消预约物品
+     * @param dto 物品id
+     */
+    void cancelSubscribe(List<cancelSubscribeDTO> dto);
 
 }
